@@ -61,11 +61,8 @@ GandhiGPT/
 ### 1. Clone the repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd GandhiGPT
+git clone https://github.com/prashantjangir-git-hub/GandhiGPT
 ```
-
-Replace `YOUR_GITHUB_REPOSITORY_URL` with your repository's actual GitHub URL.
 
 ### 2. Install dependencies
 
