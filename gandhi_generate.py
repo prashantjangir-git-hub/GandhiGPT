@@ -125,10 +125,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Load your saved checkpoint
-    checkpoint = torch.load(
-        "gandhi_gpt_checkpoint.pth",
-        map_location=device
-    )
+    checkpoint=torch.load("checkpoints/gandhi_gpt_checkpoint.pth",map_location=device)
 
     chars = checkpoint["chars"]
     stoi = {ch: i for i, ch in enumerate(chars)}
