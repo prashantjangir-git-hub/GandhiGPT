@@ -1,15 +1,25 @@
+
+const API_URL = 'https://gandhigpt-api.onrender.com';
+
 const form = document.getElementById('promptForm');
 const input = document.getElementById('promptInput');
 const chatBody = document.getElementById('chatBody');
 const clearButton = document.getElementById('clearButton');
 const charCount = document.getElementById('charCount');
 
+let isGenerating = false;
+
+// Update character counter and textarea height
 function updateCount() {
   charCount.textContent = `${input.value.length} / 500`;
+
   input.style.height = 'auto';
   input.style.height = `${Math.min(input.scrollHeight, 100)}px`;
 }
+
 input.addEventListener('input', updateCount);
+
+// Enter sends prompt; Shift + Enter creates a new line
 input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -17,69 +27,227 @@ input.addEventListener('keydown', (event) => {
   }
 });
 
-document.querySelectorAll('.suggestion').forEach((button) => {
-  button.addEventListener('click', () => {
-    input.value = button.dataset.prompt || '';
-    updateCount();
-    input.focus();
-  });
-});
+// Handle suggested prompts
+function useSuggestion(button) {
+  input.value = button.dataset.prompt || '';
+  updateCount();
+  input.focus();
+}
 
+function attachSuggestionHandlers(container = document) {
+  container.querySelectorAll('.suggestion').forEach((button) => {
+    button.addEventListener('click', () => {
+      useSuggestion(button);
+    });
+  });
+}
+
+attachSuggestionHandlers();
+
+// Scroll chat to the latest message
+function scrollChatToBottom() {
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+// Add user's message
 function addUserMessage(text) {
   const wrapper = document.createElement('div');
   wrapper.className = 'user-message';
+
   const paragraph = document.createElement('p');
   paragraph.textContent = text;
+
   wrapper.appendChild(paragraph);
   chatBody.appendChild(wrapper);
+
+  scrollChatToBottom();
 }
 
-function addNotice() {
+// Add GandhiGPT's response
+function addAssistantMessage(labelText, messageText) {
   const wrapper = document.createElement('div');
   wrapper.className = 'generated-message';
+
   const mark = document.createElement('div');
   mark.className = 'assistant-mark';
   mark.textContent = 'G';
+
   const content = document.createElement('div');
   content.className = 'message-content';
+
   const label = document.createElement('div');
   label.className = 'message-label';
-  label.textContent = 'MODEL CONNECTION';
+  label.textContent = labelText;
+
   const paragraph = document.createElement('p');
-  paragraph.textContent = 'Your prompt has been entered, but live generation is not connected yet. This GitHub Pages site is the frontend only. In the next stage, we will connect it to a Python backend that loads your trained GandhiGPT checkpoint.';
+  paragraph.textContent = messageText;
+
   content.append(label, paragraph);
   wrapper.append(mark, content);
+
   chatBody.appendChild(wrapper);
+
+  scrollChatToBottom();
+
+  return {
+    wrapper,
+    paragraph,
+    label
+  };
 }
 
-form.addEventListener('submit', (event) => {
+// Send prompt to the actual GandhiGPT model
+async function generateText(prompt) {
+  const message = addAssistantMessage(
+    'GANDHIGPT IS THINKING',
+    'Generating a continuation from the trained model...'
+  );
+
+  try {
+    const response = await fetch(`${API_URL}/generate`, {
+      method: 'POST',
+
+      headers: {
+        'Content-Type': 'application/json'
+      },
+
+      body: JSON.stringify({
+        prompt: prompt,
+        tokens: 250
+      })
+    });
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error(
+        'The server returned an unreadable response.'
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || `Server error: ${response.status}`
+      );
+    }
+
+    if (
+      typeof data.text !== 'string' ||
+      !data.text.trim()
+    ) {
+      throw new Error(
+        'The model returned an empty response. Try another prompt.'
+      );
+    }
+
+    // Display actual model output
+    message.label.textContent =
+      'GANDHIGPT · GENERATED TEXT';
+
+    message.paragraph.textContent = data.text;
+
+  } catch (error) {
+    message.label.textContent = 'CONNECTION ERROR';
+
+    message.paragraph.textContent =
+      `${error.message} If the server has been idle, wait a little and try again.`;
+
+    message.wrapper.classList.add('error-message');
+  }
+
+  scrollChatToBottom();
+}
+
+// Submit prompt
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
+
   const prompt = input.value.trim();
-  if (!prompt) return;
+
+  if (!prompt || isGenerating) {
+    return;
+  }
+
+  isGenerating = true;
+
+  const submitButton = form.querySelector(
+    'button[type="submit"]'
+  );
+
+  if (submitButton) {
+    submitButton.disabled = true;
+  }
+
+  input.disabled = true;
+
+  // Show user's prompt
   addUserMessage(prompt);
-  addNotice();
+
   input.value = '';
   updateCount();
-  chatBody.scrollTop = chatBody.scrollHeight;
+
+  // Generate model response
+  await generateText(prompt);
+
+  // Re-enable input
+  isGenerating = false;
+
+  input.disabled = false;
+
+  if (submitButton) {
+    submitButton.disabled = false;
+  }
+
+  input.focus();
 });
 
+// Clear conversation
 clearButton.addEventListener('click', () => {
-  chatBody.innerHTML = `<div class="welcome-message">
-    <div class="assistant-mark">G</div>
-    <div class="message-content">
-      <div class="message-label">A NOTE FROM THE MODEL</div>
-      <p>Welcome. Give me a phrase to begin with. I’ll use patterns learned from the training text to attempt a continuation.</p>
-      <div class="suggestion-row">
-        <button class="suggestion" type="button" data-prompt="Truth and non-violence">Truth and non-violence</button>
-        <button class="suggestion" type="button" data-prompt="The meaning of freedom">The meaning of freedom</button>
+  if (isGenerating) {
+    return;
+  }
+
+  chatBody.innerHTML = `
+    <div class="welcome-message">
+
+      <div class="assistant-mark">G</div>
+
+      <div class="message-content">
+
+        <div class="message-label">
+          A NOTE FROM THE MODEL
+        </div>
+
+        <p>
+          Welcome. Give me a phrase to begin with.
+          I’ll use patterns learned from the training text
+          to attempt a continuation.
+        </p>
+
+        <div class="suggestion-row">
+
+          <button
+            class="suggestion"
+            type="button"
+            data-prompt="Truth and non-violence">
+            Truth and non-violence
+          </button>
+
+          <button
+            class="suggestion"
+            type="button"
+            data-prompt="The meaning of freedom">
+            The meaning of freedom
+          </button>
+
+        </div>
+
       </div>
+
     </div>
-  </div>`;
-  chatBody.querySelectorAll('.suggestion').forEach((button) => {
-    button.addEventListener('click', () => {
-      input.value = button.dataset.prompt || '';
-      updateCount();
-      input.focus();
-    });
-  });
+  `;
+
+  attachSuggestionHandlers(chatBody);
 });
