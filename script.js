@@ -354,3 +354,128 @@ document.addEventListener("DOMContentLoaded", () => {
 
   elements.forEach(element => observer.observe(element));
 });
+
+
+
+/* =========================================
+   GANDHIGPT — PARALLAX ENGINE
+========================================= */
+
+(() => {
+  const hero = document.querySelector(".hero");
+  const heroArt = document.querySelector(".hero-art");
+  const artCard = document.querySelector(".art-card");
+  const seal = document.querySelector(".floating-seal");
+  const ambientOne = document.querySelector(".ambient-one");
+  const ambientTwo = document.querySelector(".ambient-two");
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
+  if (reduceMotion.matches || !heroArt || !artCard) return;
+
+  // Keep the effect disabled on touch devices.
+  const canUsePointer = window.matchMedia(
+    "(hover: hover) and (pointer: fine)"
+  ).matches;
+
+  let mouseX = 0;
+  let mouseY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let scrollY = window.scrollY;
+  let animationFrame = null;
+
+  function handlePointerMove(event) {
+    const bounds = heroArt.getBoundingClientRect();
+
+    mouseX = (
+      (event.clientX - bounds.left) / bounds.width - 0.5
+    ) * 2;
+
+    mouseY = (
+      (event.clientY - bounds.top) / bounds.height - 0.5
+    ) * 2;
+
+    mouseX = Math.max(-1, Math.min(1, mouseX));
+    mouseY = Math.max(-1, Math.min(1, mouseY));
+
+    requestAnimationFrame(updateParallax);
+  }
+
+  function handlePointerLeave() {
+    mouseX = 0;
+    mouseY = 0;
+    requestAnimationFrame(updateParallax);
+  }
+
+  function handleScroll() {
+    scrollY = window.scrollY;
+    requestAnimationFrame(updateParallax);
+  }
+
+  function updateParallax() {
+    // Gentle mouse movement
+    const targetX = mouseX * 9;
+    const targetY = mouseY * 7;
+
+    currentX += (targetX - currentX) * 0.12;
+    currentY += (targetY - currentY) * 0.12;
+
+    heroArt.style.setProperty("--parallax-x", `${currentX * 0.35}px`);
+    heroArt.style.setProperty("--parallax-y", `${currentY * 0.35}px`);
+
+    artCard.style.setProperty("--card-x", `${currentX * 0.25}px`);
+    artCard.style.setProperty("--card-y", `${currentY * 0.25}px`);
+
+    artCard.style.setProperty(
+      "--card-rotate-y",
+      `${currentX * 0.45}deg`
+    );
+
+    artCard.style.setProperty(
+      "--card-rotate-x",
+      `${-currentY * 0.35}deg`
+    );
+
+    if (seal) {
+      seal.style.setProperty("--seal-x", `${currentX * -0.5}px`);
+      seal.style.setProperty("--seal-y", `${currentY * -0.5}px`);
+    }
+
+    // Background moves at a different speed while scrolling
+    const backgroundOffset = Math.min(scrollY, 700);
+
+    if (ambientOne) {
+      ambientOne.style.setProperty(
+        "--ambient-one-x",
+        `${backgroundOffset * 0.035}px`
+      );
+      ambientOne.style.setProperty(
+        "--ambient-one-y",
+        `${backgroundOffset * -0.09}px`
+      );
+    }
+
+    if (ambientTwo) {
+      ambientTwo.style.setProperty(
+        "--ambient-two-x",
+        `${backgroundOffset * -0.025}px`
+      );
+      ambientTwo.style.setProperty(
+        "--ambient-two-y",
+        `${backgroundOffset * -0.045}px`
+      );
+    }
+  }
+
+  if (canUsePointer) {
+    heroArt.addEventListener("pointermove", handlePointerMove);
+    heroArt.addEventListener("pointerleave", handlePointerLeave);
+  }
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+
+  updateParallax();
+})();
