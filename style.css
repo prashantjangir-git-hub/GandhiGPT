@@ -437,3 +437,96 @@ body {
     transition: none;
   }
 }
+
+
+/* =========================================
+   GANDHIGPT — SUBTLE 3D PARALLAX
+========================================= */
+
+/* Main hero illustration */
+.hero-art {
+  transform:
+    translate3d(
+      var(--parallax-x, 0px),
+      var(--parallax-y, 0px),
+      0
+    );
+
+  transition: transform 0.25s ease-out;
+  will-change: transform;
+}
+
+/* 3D movement of the illustration card */
+.art-card {
+  transform:
+    translate3d(
+      var(--card-x, 0px),
+      var(--card-y, 0px),
+      0
+    )
+    rotateY(calc(-5deg + var(--card-rotate-y, 0deg)))
+    rotateX(calc(2deg + var(--card-rotate-x, 0deg)));
+
+  transition: transform 0.25s ease-out;
+  transform-style: preserve-3d;
+}
+
+/* Floating seal moves independently */
+.floating-seal {
+  transform:
+    translate3d(
+      var(--seal-x, 0px),
+      var(--seal-y, 0px),
+      0
+    )
+    rotate(9deg);
+
+  transition: transform 0.3s ease-out;
+}
+
+/* Background ambient shapes */
+.ambient-one {
+  transform: translate3d(
+    var(--ambient-one-x, 0px),
+    var(--ambient-one-y, 0px),
+    0
+  );
+}
+
+.ambient-two {
+  transform: translate3d(
+    var(--ambient-two-x, 0px),
+    var(--ambient-two-y, 0px),
+    0
+  );
+}
+
+.ambient {
+  transition: transform 0.4s ease-out;
+}
+
+/* Mobile: keep movement subtle */
+@media (max-width: 650px) {
+  .hero-art {
+    transform: translate3d(0, var(--parallax-y, 0px), 0);
+  }
+
+  .art-card {
+    transform: rotateY(-2deg) rotateX(1deg);
+  }
+
+  .floating-seal {
+    transform: rotate(9deg);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .hero-art,
+  .art-card,
+  .floating-seal,
+  .ambient {
+    transform: none !important;
+    transition: none !important;
+  }
+}
