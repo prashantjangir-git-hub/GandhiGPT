@@ -9,7 +9,7 @@ const charCount = document.getElementById('charCount');
 
 let isGenerating = false;
 
-// Update character counter and textarea height
+// Update character counter and textarea height.
 function updateCount() {
   charCount.textContent = `${input.value.length} / 500`;
 
