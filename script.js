@@ -251,3 +251,59 @@ clearButton.addEventListener('click', () => {
 
   attachSuggestionHandlers(chatBody);
 });
+
+
+/* =========================================
+   GANDHIGPT DARK / LIGHT MODE
+========================================= */
+
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeText = document.getElementById('themeText');
+
+// Read saved theme preference
+function getSavedTheme() {
+  try {
+    return localStorage.getItem('gandhigpt-theme');
+  } catch {
+    return null;
+  }
+}
+
+// Apply selected theme
+function applyTheme(theme) {
+  document.body.dataset.theme = theme;
+
+  const isDark = theme === 'dark';
+
+  themeIcon.textContent = isDark ? '☀' : '☾';
+  themeText.textContent = isDark ? 'Light mode' : 'Dark mode';
+
+  themeToggle.setAttribute(
+    'aria-label',
+    isDark ? 'Switch to light mode' : 'Switch to dark mode'
+  );
+
+  document.querySelector('meta[name="theme-color"]')
+    ?.setAttribute(
+      'content',
+      isDark ? '#20251f' : '#eee9dc'
+    );
+
+  try {
+    localStorage.setItem('gandhigpt-theme', theme);
+  } catch {
+    // Theme still works for this visit if storage is unavailable.
+  }
+}
+
+// Start with saved theme, otherwise light mode
+const savedTheme = getSavedTheme();
+applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+
+// Toggle theme when clicked
+themeToggle.addEventListener('click', () => {
+  const currentTheme = document.body.dataset.theme;
+
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+});
