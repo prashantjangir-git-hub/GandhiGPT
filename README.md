@@ -16,6 +16,9 @@ Visit the live application:
 
 Enter a prompt and let the model generate a continuation based on patterns it learned during training.
 
+<img width="1066" height="557" alt="image" src="https://github.com/user-attachments/assets/c1b0ab75-637c-4a14-8835-bfeab378b66c" />
+
+
 The website includes:
 - Interactive text-generation interface
 - Live connection to the trained model through a Python API
