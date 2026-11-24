@@ -6,7 +6,18 @@
 
 GandhiGPT is an educational project that explores how GPT-style language models work, from preparing a text dataset to training a Transformer and generating text through a web application.
 
----
+
+
+### By the numbers
+
+| **79.4M** | **90,915** |
+|:---:|:---:|
+| Characters in the prepared text | Lines of text |
+
+| **205** | **228K** |
+|:---:|:---:|
+| Unique characters in the vocabulary | Model parameters |
+
 
 ## 🌿 Try GandhiGPT
 
@@ -22,10 +33,8 @@ Enter a prompt and let the model generate a continuation based on patterns it le
 The website includes:
 - Interactive text-generation interface
 - Live connection to the trained model through a Python API
-- Light and dark themes
 - Model information and architecture overview
 - Training details and dataset attribution
-- Responsive layout
 
 ---
 
