@@ -1,67 +1,187 @@
 # GandhiGPT
 
-A small character-level Transformer language model trained on cleaned text from Mahatma Gandhi's writings.
+### A small GPT-style language model trained on writings associated with Mahatma Gandhi.
 
-This project is an educational implementation of a GPT-style language model, inspired by Andrej Karpathy's tutorial, [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY).
+[**🌐 Live Website**](https://prashantjangir-git-hub.github.io/GandhiGPT/) · [**💻 GitHub Repository**](https://github.com/prashantjangir-git-hub/GandhiGPT) · [**⚙️ Backend API**](https://gandhigpt-api.onrender.com/health)
 
-## About the Project
+GandhiGPT is an educational project that explores how GPT-style language models work, from preparing a text dataset to training a Transformer and generating text through a web application.
 
-GandhiGPT learns patterns in text by predicting the next character in a sequence. It uses a decoder-only Transformer architecture with self-attention.
+---
 
-The goal of this project is to understand the fundamentals of GPT-style pretraining and experiment with training a language model on a different text corpus.
+## 🌿 Try GandhiGPT
 
-**Important:** GandhiGPT is an experimental text generator. It is not an official representation of Mahatma Gandhi's views, a reliable historical reference, or a question-answering chatbot.
+Visit the live application:
 
-## Model Details
+**[https://prashantjangir-git-hub.github.io/GandhiGPT/](https://prashantjangir-git-hub.github.io/GandhiGPT/)**
 
-| Setting | Value |
+Enter a prompt and let the model generate a continuation based on patterns it learned during training.
+
+The website includes:
+- Interactive text-generation interface
+- Live connection to the trained model through a Python API
+- Light and dark themes
+- Model information and architecture overview
+- Training details and dataset attribution
+- Responsive layout
+
+---
+
+## 🧠 About the Model
+
+GandhiGPT is a character-level, decoder-only Transformer language model.
+
+It learns by predicting the next character in a sequence. During training, it processes text and learns statistical patterns, structures, and relationships between characters.
+
+Unlike a conventional chatbot, GandhiGPT does not retrieve information or answer questions using a knowledge base. It generates text continuations based on patterns learned from its training data.
+
+### Model specifications
+
+| Specification | Value |
 |---|---|
 | Architecture | Decoder-only Transformer |
 | Tokenization | Character-level |
 | Vocabulary size | 205 characters |
-| Embedding size | 64 |
+| Embedding dimension | 64 |
 | Attention heads | 4 |
 | Transformer layers | 4 |
 | Context length | 32 characters |
 | Training iterations | 5,000 |
-| Parameters | Approximately 228,000 |
+| Parameters | Approximately 228K |
 | Training/validation split | 90% / 10% |
+| Framework | PyTorch |
 
-The model was trained using PyTorch.
+### Training results
 
-## Dataset
+| Metric | Final reported value |
+|---|---:|
+| Training loss | 1.5976 |
+| Validation loss | 1.5955 |
 
-The original text data was obtained from:
+These loss values describe the model's performance on its character-prediction training objective. They do not measure factual accuracy or conversational ability.
+
+---
+
+## ⚙️ How It Works
+
+The project follows a simplified GPT-style pretraining pipeline:
+
+1. **Dataset preparation** — Clean and prepare the Gandhi writings text.
+2. **Character encoding** — Convert characters into numerical token IDs.
+3. **Embedding** — Map token IDs into learned vector representations.
+4. **Self-attention** — Let the model learn relationships between characters in the context.
+5. **Transformer blocks** — Process the sequence through multiple decoder layers.
+6. **Next-character prediction** — Predict a probability distribution for the next character.
+7. **Text generation** — Repeatedly sample the next character to produce a continuation.
+
+---
+
+## 📚 Dataset
+
+The model was trained on a cleaned text dataset containing approximately:
+
+- **79.4 million characters** in the original prepared text.
+- **205 unique characters** in the model vocabulary.
+- **90,915 lines** in the original dataset.
+
+### Dataset source
+
+The original dataset was obtained from:
 
 [AbelTheGeorge/Gandhi-Dataset](https://github.com/AbelTheGeorge/Gandhi-Dataset)
 
-The data was cleaned and prepared for training. The resulting text file was named `gandhi_clean.txt`.
-
-See [`data/README.md`](data/README.md) for dataset information and attribution.
+The text was cleaned and prepared for model training. The resulting file was named `gandhi_clean.txt`.
 
 The original dataset is not included in this repository.
 
-## Repository Structure
+For more information about the dataset and attribution, see [`data/README.md`](data/README.md).
+
+---
+
+## 🖥️ Project Architecture
+
+GandhiGPT consists of three main parts:
+
+| Component | Technology | Purpose |
+|---|---|---|
+| Model training | Python, PyTorch, Google Colab | Train the Transformer |
+| Backend | Python, Flask, Gunicorn | Load the checkpoint and generate text |
+| Frontend | HTML, CSS, JavaScript | Provide the interactive website |
+| Hosting | Render and GitHub Pages | Deploy the backend and frontend |
+
+### Request flow
+
+```text
+          User enters a prompt
+                   |
+                   v
+          GitHub Pages Website
+             HTML / CSS / JS
+                   |
+                   v
+             Flask API
+              /generate
+                   |
+                   v
+          Trained GandhiGPT
+          PyTorch Checkpoint
+                   |
+                   v
+          Generated text response
+                   |
+                   v
+          Displayed on website
+```
+
+### Live backend
+
+The Flask API is deployed on Render.
+
+Health endpoint:
+
+`https://gandhigpt-api.onrender.com/health`
+
+Generation endpoint:
+
+`POST https://gandhigpt-api.onrender.com/generate`
+
+The generation endpoint accepts a prompt and token count and returns generated text.
+
+---
+
+## 📁 Repository Structure
 
 ```text
 GandhiGPT/
-├── README.md
-├── gandhi_gpt.ipynb
+│
+├── index.html
+├── style.css
+├── script.js
+├── favicon.svg
+│
+├── app.py
 ├── gandhi_generate.py
+├── gandhi_gpt.ipynb
 ├── requirements.txt
+│
 ├── checkpoints/
 │   ├── README.md
 │   └── gandhi_gpt_checkpoint.pth
-└── data/
-    └── README.md
+│
+├── data/
+│   └── README.md
+│
+└── README.md
 ```
 
-## Getting Started
+---
+
+## 🚀 Run GandhiGPT Locally
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/prashantjangir-git-hub/GandhiGPT
+git clone https://github.com/prashantjangir-git-hub/GandhiGPT.git
+cd GandhiGPT
 ```
 
 ### 2. Install dependencies
@@ -70,7 +190,13 @@ git clone https://github.com/prashantjangir-git-hub/GandhiGPT
 python -m pip install -r requirements.txt
 ```
 
-### 3. Generate text
+### 3. Generate text from the trained model
+
+Make sure the checkpoint is available at:
+
+```text
+checkpoints/gandhi_gpt_checkpoint.pth
+```
 
 Run:
 
@@ -80,52 +206,69 @@ python gandhi_generate.py --prompt "Truth" --tokens 300
 
 You can change the prompt and number of generated characters.
 
-The trained checkpoint must be available at:
+### 4. Run the web backend locally
 
-```text
-checkpoints/gandhi_gpt_checkpoint.pth
+```bash
+python app.py
 ```
 
-## Training
+The Flask API should be available at the local address configured by the application.
 
-The training notebook is:
+The frontend can be opened through a local development server or hosted static page. For local frontend testing, configure the API URL in `script.js` to point to your local backend.
 
-`gandhi_gpt.ipynb`
+### 5. Train from scratch
 
-Open it in Google Colab or Jupyter Notebook.
-
-To train the model from scratch, you will also need the cleaned dataset file, `gandhi_clean.txt`, in the expected location.
-
-## Example
-
-A sample prompt:
+Open:
 
 ```text
-Truth
+gandhi_gpt.ipynb
 ```
 
-The model generates a continuation based on patterns learned during training.
+Run it in Google Colab or Jupyter Notebook.
 
-Generated text may contain grammatical errors, repetition, or meaningless sequences. This is expected from a small character-level experimental model.
+To reproduce training, you will also need the cleaned dataset file `gandhi_clean.txt` in the location expected by the notebook.
 
-## Future Plans
+---
 
-- Build a simple web interface for GandhiGPT.
-- Make text generation accessible through a browser.
-- Explore hosting the frontend using GitHub Pages.
+## ⚠️ Limitations
 
-## Acknowledgements
+GandhiGPT is an experimental educational model, not a production chatbot.
 
-- Andrej Karpathy for the educational GPT implementation tutorial.
-- AbelTheGeorge for the Gandhi dataset.
-- Publications Division, Government of India, for the underlying collected works.
+- It is a small model with approximately 228K parameters.
+- It generates character-level text rather than understanding language like a modern large language model.
+- Generated output may contain grammatical errors, repetition, incomplete sentences, or meaningless sequences.
+- It does not perform factual question answering or internet searches.
+- Generated text is not verified historical material.
+- Generated output must not be presented as an authentic quotation or statement by Mahatma Gandhi.
 
-## Disclaimer
+The purpose of this project is to demonstrate the foundations of GPT-style pretraining, not to reproduce Gandhi's actual voice, opinions, or beliefs.
 
-This is an independent educational project. It is not affiliated with or endorsed by the Government of India or the Publications Division.
+---
 
-Please consult the original dataset repository for its usage terms.
+## 🙏 Acknowledgements
 
-## Author
+- **Andrej Karpathy** — For the educational GPT implementation tutorial.
+- **AbelTheGeorge** — For the original Gandhi dataset repository.
+- **Publications Division, Government of India** — For the underlying collected works referenced in the dataset attribution.
 
-Created by Prashant Jangir as a learning project to explore Transformer architecture and language model pretraining.
+Please consult the original dataset repository and relevant source publications for applicable usage and redistribution terms.
+
+---
+
+## 📌 Disclaimer
+
+GandhiGPT is an independent educational project. It is not affiliated with, endorsed by, or officially associated with Mahatma Gandhi, the Government of India, or the Publications Division.
+
+The model's generated output is machine-generated experimental text and should not be attributed to Mahatma Gandhi.
+
+---
+
+## 👨‍💻 Author
+
+**Prashant Jangir**
+
+Created as a learning project to explore Transformer architecture, GPT-style pretraining, dataset preparation, and deployment of a language model as a web application.
+
+If you find this project interesting, feel free to explore the repository and experiment with the code.
+
+**[⭐ Star the repository on GitHub](https://github.com/prashantjangir-git-hub/GandhiGPT)**
