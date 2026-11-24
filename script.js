@@ -307,3 +307,50 @@ themeToggle.addEventListener('click', () => {
 
   applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
 });
+
+
+
+/* =========================================
+   GANDHIGPT — SCROLL REVEAL ANIMATIONS
+========================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const revealElements = [
+    ".hero",
+    ".workspace-section",
+    ".about-section",
+    ".details-section",
+    ".architecture-grid",
+    ".training-grid",
+    ".limitations-section",
+    ".footer"
+  ];
+
+  revealElements.forEach(selector => {
+    document.querySelectorAll(selector).forEach(element => {
+      element.classList.add("reveal");
+    });
+  });
+
+  const elements = document.querySelectorAll(".reveal");
+
+  // Show everything immediately if reduced motion is preferred
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    elements.forEach(element => element.classList.add("visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: "0px 0px -40px 0px"
+  });
+
+  elements.forEach(element => observer.observe(element));
+});
